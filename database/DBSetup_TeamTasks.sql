@@ -108,6 +108,7 @@ begin
     set nocount on
 
     insert into Tasks (ProjectId, Title, Description, AssigneeId, StatusId, PriorityId, EstimatedComplexity, DueDate)
+    output inserted.TaskId
     values (@ProjectId, @Title, @Description, @AssigneeId, @StatusId, @PriorityId, @EstimatedComplexity, @DueDate)
 end
 go
