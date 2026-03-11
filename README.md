@@ -10,8 +10,7 @@ Prueba tecnica — Gestion de proyectos, tareas y desarrolladores con dashboard 
 - SQL Server 2022 instalado y corriendo
 
 ### Base de datos
-El script `DBSetup_TeamTasks.sql` crea la base de datos `TeamTasksSample`, las tablas, constraints y stored procedures.
-Los datos de prueba se cargan desde la API mediante el endpoint de seed.
+El script `DBSetup_TeamTasks.sql` crea la base de datos `TeamTasksSample`, las tablas, constraints, stored procedures y los datos base minimos (estados, prioridades, 5 desarrolladores, 3 proyectos y 20 tareas).
 
 Para ejecutar el script, conectarse primero a la base de datos `master`.
 El script crea `TeamTasksSample` automaticamente.
@@ -40,14 +39,13 @@ dotnet run
 La API queda disponible en `http://localhost:5000`. Swagger en `http://localhost:5000/swagger`.
 
 ### Cargar datos de prueba
-Una vez la API este corriendo, ejecutar el siguiente endpoint para insertar los datos iniciales:
+El script SQL ya incluye los datos base. Como alternativa, si se prefiere cargar los datos desde la API:
 
 ```
 POST http://localhost:5000/api/seed
 ```
 
-Esto inserta los datos de referencia (estados y prioridades), 5 desarrolladores, 3 proyectos y 20 tareas distribuidas.
-El endpoint verifica si ya existen datos antes de insertar, por lo que es seguro llamarlo mas de una vez sin generar duplicados.
+El endpoint usa MERGE, por lo que es seguro ejecutarlo varias veces sin generar duplicados. Si los datos ya existen retorna `409 Conflict`.
 
 ### SPA
 ```bash
@@ -80,7 +78,7 @@ La contraseña del usuario `TeamTasksUser` en el contenedor es `TeamTasks2024!`.
 - Implemente un componente `datatable` reutilizable que uso en todas las vistas tabulares, y un pipe `statusbadge` para los estados y prioridades.
 - Para el grafico opcional usamos Chart.js.
 
-Los datos de prueba se cargan mediante el endpoint `POST /api/seed`, que verifica si ya existen datos antes de insertar y evitar duplicados.
+Los datos base se incluyen directamente en el script SQL. El endpoint `POST /api/seed` es una alternativa que usa MERGE para evitar duplicados.
 ---
 
 ## Paquetes utilizados
