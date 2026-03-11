@@ -17,7 +17,7 @@ namespace TeamTasks.API.Extensions
                 options.ConnectionString = configuration.GetConnectionString("DefaultConnection")!;
             });
 
-            services.AddDbContext<AppDbContext>(options =>
+            services.AddDbContext<AppDbContext>(options => 
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
             return services;
