@@ -1,4 +1,4 @@
-﻿namespace TeamTasks.Infrastructure.Repositories
+﻿namespace TeamTasks.Application.Interfaces.Repositories
 {
     public interface ISeedRepository
     {

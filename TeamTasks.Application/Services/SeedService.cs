@@ -1,5 +1,5 @@
 ﻿using TeamTasks.Application.Interfaces.Services;
-using TeamTasks.Infrastructure.Repositories;
+using TeamTasks.Application.Interfaces.Repositories;
 
 namespace TeamTasks.Application.Services
 {

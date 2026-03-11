@@ -2,6 +2,7 @@
 using TeamTasks.Infrastructure.Options;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
+using TeamTasks.Application.Interfaces.Repositories;
 
 namespace TeamTasks.Infrastructure.Repositories
 {
