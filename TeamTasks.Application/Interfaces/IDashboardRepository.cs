@@ -1,4 +1,6 @@
-﻿namespace TeamTasks.Application.Interfaces
+﻿using TeamTasks.Application.DTOs;
+
+namespace TeamTasks.Application.Interfaces
 {
     public interface IDashboardRepository
     {

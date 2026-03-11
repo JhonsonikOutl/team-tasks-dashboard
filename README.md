@@ -10,7 +10,7 @@ Prueba tecnica — Gestion de proyectos, tareas y desarrolladores con dashboard 
 - SQL Server 2022 instalado y corriendo
 
 ### Base de datos
-El script `DBSetup_TeamTasks.sql` crea la base de datos `TeamTasksSample`, las tablas y constraints.
+El script `DBSetup_TeamTasks.sql` crea la base de datos `TeamTasksSample`, las tablas, constraints y stored procedures.
 Los datos de prueba se cargan desde la API mediante el endpoint de seed.
 
 Para ejecutar el script, conectarse primero a la base de datos `master`.
@@ -30,7 +30,7 @@ cd src/TeamTasks.API
 Actualizar la cadena de conexion en `appsettings.Development.json`:
 
 ```json
-"DefaultConnection": "Server=localhost;Database=TeamTasksSample;User Id=sa;Password=TeamTasks2024!;TrustServerCertificate=True"
+"DefaultConnection": "Server=localhost;Database=TeamTasksSample;User Id=TeamTasksUser;Password=TeamTasks2024!;TrustServerCertificate=True"
 ```
 
 ```bash
@@ -67,19 +67,20 @@ Si tienes Docker Desktop instalado:
 docker-compose up -d
 ```
 
-La contraseña del usuario `sa` en el contenedor es `TeamTasks2024!`. Actualizar el `appsettings.Development.json` con esa contraseña y luego seguir los pasos de API y SPA indicados arriba.
+La contraseña del usuario `TeamTasksUser` en el contenedor es `TeamTasks2024!`. Actualizar el `appsettings.Development.json` con esa contraseña y luego seguir los pasos de API y SPA indicados arriba.
 ---
 
 ## Decisiones que tome
 - Use SQL Server por ser el motor de base de datos con el que tengo mayor experiencia y donde me siento mas comodo para una prueba tecnica.
-- Las tablas se crean desde el script SQL, que es la fuente de verdad de la estructura. EF Core mapea las tablas existentes sin usar migraciones.
-- Para el acceso a datos usamos EF Core en el CRUD basico y Dapper en las consultas del dashboard, donde escribir SQL directo es mas claro que armar expresiones con LINQ.
+- Las tablas se crean desde el script SQL, que es el origen de la estructura. EF Core mapea las tablas existentes.
+- Todas las consultas estan implementadas como SP en la base de datos. Los repositorios invocan el SP por nombre.
+- Para el acceso a datos use EF Core en operaciones CRUD simples y Dapper para ejecutar los SP del dashboard.
 - El backend sigue Clean Architecture dividido en cuatro capas: API, Application, Domain e Infrastructure, mas un proyecto separado para los tests con xUnit.
 - El frontend esta en Angular 17 con componentes standalone.
 - Implemente un componente `datatable` reutilizable que uso en todas las vistas tabulares, y un pipe `statusbadge` para los estados y prioridades.
 - Para el grafico opcional usamos Chart.js.
 
-Los datos de prueba se cargan mediante el endpoint `POST /api/seed`, que verifica si ya existen datos antes de insertar para evitar duplicados.
+Los datos de prueba se cargan mediante el endpoint `POST /api/seed`, que verifica si ya existen datos antes de insertar y evitar duplicados.
 ---
 
 ## Paquetes utilizados
