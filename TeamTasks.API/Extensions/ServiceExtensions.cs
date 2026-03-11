@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TeamTasks.Application.Interfaces;
+using TeamTasks.Infrastructure.Options;
 using TeamTasks.Infrastructure.Persistence;
+using TeamTasks.Infrastructure.Repositories;
 
 namespace TeamTasks.API.Extensions
 {
@@ -7,8 +10,23 @@ namespace TeamTasks.API.Extensions
     {
         public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
         {
+            services.Configure<DatabaseOptions>(options =>
+            {
+                options.ConnectionString = configuration.GetConnectionString("DefaultConnection")!;
+            });
+
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
+            return services;
+        }
+
+        public static IServiceCollection AddRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<IProjectRepository, ProjectRepository>();
+            services.AddScoped<ITaskRepository, TaskRepository>();
+            services.AddScoped<IDeveloperRepository, DeveloperRepository>();
+            services.AddScoped<IDashboardRepository, DashboardRepository>();
 
             return services;
         }
