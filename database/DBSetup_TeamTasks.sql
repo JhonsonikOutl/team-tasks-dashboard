@@ -347,3 +347,157 @@ begin
     order by HighRiskFlag desc, d.FirstName
 end
 go
+
+-- ===================
+-- Seed datos mínimos
+-- ===================
+SET NOCOUNT ON;
+merge projectstatuses as target
+using
+(
+    values
+        ('Planned'),
+        ('In Progress'),
+        ('Completed')
+) as source (description)
+on target.description = source.description
+when not matched then
+insert (description)
+values (source.description);
+
+
+merge taskstatuses as target
+using
+(
+    values
+        ('To Do'),
+        ('In Progress'),
+        ('Blocked'),
+        ('Completed')
+) as source (description)
+on target.description = source.description
+when not matched then
+insert (description)
+values (source.description);
+
+
+merge taskpriorities as target
+using
+(
+    values
+        ('Low'),
+        ('Medium'),
+        ('High')
+) as source (description)
+on target.description = source.description
+when not matched then
+insert (description)
+values (source.description);
+
+
+declare @statusplanned int = (select id from projectstatuses where description = 'Planned');
+declare @statusinprogress int = (select id from projectstatuses where description = 'In Progress');
+declare @statuscompleted int = (select id from projectstatuses where description = 'Completed');
+declare @tasktodo int = (select id from taskstatuses where description = 'To Do');
+declare @taskinprogress int = (select id from taskstatuses where description = 'In Progress');
+declare @taskblocked int = (select id from taskstatuses where description = 'Blocked');
+declare @taskcompleted int = (select id from taskstatuses where description = 'Completed');
+declare @prioritylow int = (select id from taskpriorities where description = 'Low');
+declare @prioritymedium int = (select id from taskpriorities where description = 'Medium');
+declare @priorityhigh int = (select id from taskpriorities where description = 'High');
+
+
+merge developers as target
+using
+(
+    values
+        ('Carlos', 'Ramirez', 'carlos.ramirez@teamtasks.com', 1),
+        ('Laura', 'Gomez', 'laura.gomez@teamtasks.com', 1),
+        ('Andres', 'Torres', 'andres.torres@teamtasks.com', 1),
+        ('Valeria', 'Mendoza', 'valeria.mendoza@teamtasks.com', 1),
+        ('Diego', 'Herrera', 'diego.herrera@teamtasks.com', 1)
+) as source (firstname, lastname, email, isactive)
+on target.email = source.email
+when not matched then
+insert (firstname, lastname, email, isactive)
+values (source.firstname, source.lastname, source.email, source.isactive);
+
+
+merge projects as target
+using
+(
+    values
+        ('Portal de Clientes', 'Banco Nacional', '2026-04-01', '2026-09-30', @statusplanned),
+        ('App de Inventario', 'Logística Express', '2026-01-15', '2026-06-30', @statusinprogress),
+        ('Módulo de Reportes', 'Salud Total', '2025-06-01', '2025-12-31', @statuscompleted)
+) as source (name, clientname, startdate, enddate, statusid)
+on target.name = source.name
+and target.clientname = source.clientname
+when not matched then
+insert (name, clientname, startdate, enddate, statusid)
+values (source.name, source.clientname, source.startdate, source.enddate, source.statusid);
+
+
+merge tasks as target
+using
+(
+    values
+        (1, 'Definir arquitectura del portal', 'Documentar decisiones técnicas', 1, @tasktodo, @priorityhigh, 3, '2026-04-15', null),
+        (1, 'Configurar repositorio', 'Crear estructura base del proyecto', 2, @tasktodo, @prioritymedium, 1, '2026-04-10', null),
+        (1, 'Diseño de base de datos', 'Modelar entidades del portal', 3, @tasktodo, @priorityhigh, 4, '2026-04-20', null),
+        (1, 'Configurar CI/CD', 'Pipeline de integración continua', 4, @tasktodo, @prioritymedium, 2, '2026-04-25', null),
+        (1, 'Definir contrato de APIs', 'Especificación OpenAPI', 5, @tasktodo, @prioritymedium, 2, '2026-04-18', null),
+        (1, 'Configurar entornos', 'Dev, QA y Prod', 1, @taskblocked, @prioritylow, 1, '2026-04-12', null),
+        (2, 'Módulo de entrada de inventario', 'CRUD de productos entrantes', 2, @taskinprogress, @priorityhigh, 4, '2026-03-20', null),
+        (2, 'Módulo de salida de inventario', 'CRUD de productos salientes', 3, @taskinprogress, @priorityhigh, 4, '2026-03-25', null),
+        (2, 'Alertas de stock mínimo', 'Notificaciones por umbral', 4, @tasktodo, @prioritymedium, 3, '2026-03-28', null),
+        (2, 'Reporte de movimientos', 'Exportar a Excel y PDF', 5, @taskinprogress, @prioritymedium, 3, '2026-04-05', null),
+        (2, 'Integración con proveedor', 'API REST de proveedor externo', 1, @taskblocked, @priorityhigh, 5, '2026-03-18', null),
+        (2, 'Autenticación de usuarios', 'JWT y roles', 2, @taskcompleted, @priorityhigh, 3, '2026-02-28', '2026-03-05'),
+        (2, 'Configuración de base de datos', 'Migraciones y seed inicial', 3, @taskcompleted, @prioritymedium, 2, '2026-02-20', '2026-02-22'),
+        (2, 'Diseño de pantallas principales', 'Wireframes aprobados', 4, @taskcompleted, @prioritylow, 1, '2026-02-15', '2026-02-25'),
+        (3, 'Reporte de ventas mensual', 'Agrupado por categoría', 5, @taskcompleted, @priorityhigh, 3, '2025-08-30', '2025-08-28'),
+        (3, 'Reporte de pacientes activos', 'Filtros por fecha y médico', 1, @taskcompleted, @prioritymedium, 2, '2025-09-15', '2025-09-20'),
+        (3, 'Dashboard ejecutivo', 'KPIs del negocio', 2, @taskcompleted, @priorityhigh, 4, '2025-10-01', '2025-10-08'),
+        (3, 'Exportación a PDF', 'Todos los reportes', 3, @taskcompleted, @prioritymedium, 3, '2025-11-01', '2025-10-30'),
+        (3, 'Envío automático por correo', 'Scheduler semanal', 4, @taskcompleted, @prioritymedium, 3, '2025-11-30', '2025-12-05'),
+        (3, 'Pruebas de aceptación', 'UAT con cliente', 5, @taskcompleted, @prioritylow, 2, '2025-12-20', '2025-12-18')
+) as source
+(
+    projectid,
+    title,
+    description,
+    assigneeid,
+    statusid,
+    priorityid,
+    estimatedcomplexity,
+    duedate,
+    completiondate
+)
+on target.projectid = source.projectid
+and target.title = source.title
+when not matched then
+insert
+(
+    projectid,
+    title,
+    description,
+    assigneeid,
+    statusid,
+    priorityid,
+    estimatedcomplexity,
+    duedate,
+    completiondate
+)
+values
+(
+    source.projectid,
+    source.title,
+    source.description,
+    source.assigneeid,
+    source.statusid,
+    source.priorityid,
+    source.estimatedcomplexity,
+    source.duedate,
+    source.completiondate
+);

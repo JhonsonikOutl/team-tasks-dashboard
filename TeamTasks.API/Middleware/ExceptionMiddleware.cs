@@ -25,6 +25,11 @@ namespace TeamTasks.API.Middleware
                 _logger.LogWarning(ex, "Error de validacion: {Message}", ex.Message);
                 await WriteResponseAsync(context, HttpStatusCode.BadRequest, ex.Message);
             }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex, "Operacion invalida: {Message}", ex.Message);
+                await WriteResponseAsync(context, HttpStatusCode.Conflict, ex.Message);
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error inesperado: {Message}", ex.Message);

@@ -17,7 +17,7 @@ namespace TeamTasks.API.Extensions
                 options.ConnectionString = configuration.GetConnectionString("DefaultConnection")!;
             });
 
-            services.AddDbContext<AppDbContext>(options => 
+            services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
             return services;
@@ -29,6 +29,7 @@ namespace TeamTasks.API.Extensions
             services.AddScoped<ITaskRepository, TaskRepository>();
             services.AddScoped<IDeveloperRepository, DeveloperRepository>();
             services.AddScoped<IDashboardRepository, DashboardRepository>();
+            services.AddScoped<ISeedRepository, SeedRepository>();
 
             return services;
         }
@@ -39,6 +40,7 @@ namespace TeamTasks.API.Extensions
             services.AddScoped<ITaskService, TaskService>();
             services.AddScoped<IDeveloperService, DeveloperService>();
             services.AddScoped<IDashboardService, DashboardService>();
+            services.AddScoped<ISeedService, SeedService>();
 
             return services;
         }
