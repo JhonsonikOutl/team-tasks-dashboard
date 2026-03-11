@@ -12,7 +12,7 @@ Prueba tecnica — Gestion de proyectos, tareas y desarrolladores con dashboard 
 ### Base de datos
 El script `DBSetup_TeamTasks.sql` crea la base de datos `TeamTasksSample`, las tablas, constraints, stored procedures y los datos base minimos (estados, prioridades, 5 desarrolladores, 3 proyectos y 20 tareas).
 
-Para ejecutar el script, conectarse primero a la base de datos `master`.
+Para ejecutar el script, conectarse primero a la base de datos `master`. 
 El script crea `TeamTasksSample` automaticamente.
 
 ```bash
@@ -23,7 +23,7 @@ o ejecutarlo directamente desde SSMS o VS Code conectado a `master`.
 
 ### API
 ```bash
-cd src/TeamTasks.API
+cd src/team-tasks-dashboard-API/TeamTasks.API
 ```
 
 Actualizar la cadena de conexion en `appsettings.Development.json`:
@@ -49,7 +49,7 @@ El endpoint usa MERGE, por lo que es seguro ejecutarlo varias veces sin generar 
 
 ### SPA
 ```bash
-cd src/team-tasks-spa
+cd src/team-tasks-dashboard-WebSPA/team-tasks-spa
 npm install
 ng serve
 ```
@@ -76,7 +76,8 @@ La contraseña del usuario `TeamTasksUser` en el contenedor es `TeamTasks2024!`.
 - El backend sigue Clean Architecture dividido en cuatro capas: API, Application, Domain e Infrastructure, mas un proyecto separado para los tests con xUnit.
 - El frontend esta en Angular 17 con componentes standalone.
 - Implemente un componente `datatable` reutilizable que uso en todas las vistas tabulares, y un pipe `statusbadge` para los estados y prioridades.
-- Para el grafico opcional usamos Chart.js.
+- Para el grafico opcional se uso Chart.js con ng2-charts.
+- El repositorio sigue una estructura monorepo con separacion clara entre API y SPA dentro de la carpeta `src/`.
 
 Los datos base se incluyen directamente en el script SQL. El endpoint `POST /api/seed` es una alternativa que usa MERGE para evitar duplicados.
 ---
@@ -94,10 +95,12 @@ Backend (.NET 8)
 Frontend (Angular 17)
 
   Angular 17.x
+  Bootstrap 5.3.x
   TypeScript 5.x
   RxJS 7.x
-  Chart.js 4.x
-  ng2-charts 6.x
+  Chart.js 4.4.x
+  ng2-charts 6.0.x
+
 ---
 
 ## Logica del calculo de riesgo de retraso
