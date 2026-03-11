@@ -1,7 +1,8 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
-using TeamTasks.Application.Interfaces;
+using TeamTasks.Application.DTOs;
+using TeamTasks.Application.Interfaces.Repositories;
 using TeamTasks.Domain.Entities;
 using TeamTasks.Infrastructure.Options;
 
@@ -16,24 +17,20 @@ namespace TeamTasks.Infrastructure.Repositories
             _connectionString = options.Value.ConnectionString;
         }
 
-        public async Task<IEnumerable<TaskItem>> GetByProjectIdAsync(int projectId, int? statusId, int? assigneeId, int page, int pageSize)
+        public async Task<IEnumerable<TaskDto>> GetByProjectIdAsync(int projectId, int? statusId, int? assigneeId, int page, int pageSize)
         {
             using var connection = new SqlConnection(_connectionString);
-            return await connection.QueryAsync<TaskItem>(
+            return await connection.QueryAsync<TaskDto>(
                 "sp_get_tasks_by_project",
                 new { ProjectId = projectId, StatusId = statusId, AssigneeId = assigneeId, Page = page, PageSize = pageSize },
                 commandType: System.Data.CommandType.StoredProcedure
             );
         }
 
-        public async Task<TaskItem?> GetByIdAsync(int id)
+        public async Task<TaskDto?> GetByIdAsync(int id)
         {
             using var connection = new SqlConnection(_connectionString);
-            return await connection.QueryFirstOrDefaultAsync<TaskItem>(
-                "sp_get_task_by_id",
-                new { TaskId = id },
-                commandType: System.Data.CommandType.StoredProcedure
-            );
+            return await connection.QueryFirstOrDefaultAsync<TaskDto>("sp_get_task_by_id", new { TaskId = id }, commandType: System.Data.CommandType.StoredProcedure);
         }
 
         public async Task<TaskItem> CreateAsync(TaskItem task)
@@ -55,7 +52,8 @@ namespace TeamTasks.Infrastructure.Repositories
                 commandType: System.Data.CommandType.StoredProcedure
             );
 
-            return (await GetByIdAsync(id))!;
+            task.TaskId = id;
+            return task;
         }
 
         public async Task UpdateStatusAsync(int id, int statusId, int? priorityId, int? estimatedComplexity)

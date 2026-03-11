@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TeamTasks.Application.Interfaces;
+using TeamTasks.Application.Interfaces.Repositories;
 using TeamTasks.Infrastructure.Options;
 using TeamTasks.Infrastructure.Persistence;
 using TeamTasks.Infrastructure.Repositories;

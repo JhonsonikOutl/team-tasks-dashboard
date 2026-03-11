@@ -1,7 +1,8 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
-using TeamTasks.Application.Interfaces;
+using TeamTasks.Application.DTOs;
+using TeamTasks.Application.Interfaces.Repositories;
 using TeamTasks.Domain.Entities;
 using TeamTasks.Infrastructure.Options;
 
@@ -16,11 +17,10 @@ namespace TeamTasks.Infrastructure.Repositories
             _connectionString = options.Value.ConnectionString;
         }
 
-        public async Task<IEnumerable<Project>> GetAllAsync()
+        public async Task<IEnumerable<ProjectDto>> GetAllAsync()
         {
             using var connection = new SqlConnection(_connectionString);
-            return await connection.QueryAsync<Project>("sp_get_all_projects", commandType: System.Data.CommandType.StoredProcedure
-            );
+            return await connection.QueryAsync<ProjectDto>("sp_get_all_projects", commandType: System.Data.CommandType.StoredProcedure);
         }
 
         public async Task<Project?> GetByIdAsync(int id)

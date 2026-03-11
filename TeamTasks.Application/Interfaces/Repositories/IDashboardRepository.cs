@@ -1,6 +1,6 @@
 ﻿using TeamTasks.Application.DTOs;
 
-namespace TeamTasks.Application.Interfaces
+namespace TeamTasks.Application.Interfaces.Repositories
 {
     public interface IDashboardRepository
     {
