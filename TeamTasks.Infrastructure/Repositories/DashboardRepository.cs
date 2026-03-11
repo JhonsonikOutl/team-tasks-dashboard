@@ -2,6 +2,8 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using TeamTasks.Application.DTOs;
+using TeamTasks.Application.DTOs.Developers;
+using TeamTasks.Application.DTOs.Projects;
 using TeamTasks.Application.Interfaces.Repositories;
 using TeamTasks.Infrastructure.Options;
 

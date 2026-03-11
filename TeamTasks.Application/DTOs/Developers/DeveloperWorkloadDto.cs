@@ -1,4 +1,4 @@
-﻿namespace TeamTasks.Application.DTOs
+﻿namespace TeamTasks.Application.DTOs.Developers
 {
     public class DeveloperWorkloadDto
     {

@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
-using TeamTasks.Application.DTOs;
+using TeamTasks.Application.DTOs.Tasks;
 using TeamTasks.Application.Interfaces.Repositories;
 using TeamTasks.Domain.Entities;
 using TeamTasks.Infrastructure.Options;

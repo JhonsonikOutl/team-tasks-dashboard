@@ -1,4 +1,4 @@
-﻿using TeamTasks.Application.DTOs;
+﻿using TeamTasks.Application.DTOs.Tasks;
 
 namespace TeamTasks.Application.Interfaces.Services
 {

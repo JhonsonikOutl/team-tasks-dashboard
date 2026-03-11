@@ -1,4 +1,4 @@
-﻿using TeamTasks.Application.DTOs;
+﻿using TeamTasks.Application.DTOs.Tasks;
 using TeamTasks.Domain.Entities;
 
 namespace TeamTasks.Application.Interfaces.Repositories
