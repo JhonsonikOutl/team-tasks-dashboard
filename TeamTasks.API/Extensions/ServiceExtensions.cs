@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TeamTasks.Application.Interfaces.Repositories;
+using TeamTasks.Application.Interfaces.Services;
+using TeamTasks.Application.Services;
 using TeamTasks.Infrastructure.Options;
 using TeamTasks.Infrastructure.Persistence;
 using TeamTasks.Infrastructure.Repositories;
@@ -27,6 +29,16 @@ namespace TeamTasks.API.Extensions
             services.AddScoped<ITaskRepository, TaskRepository>();
             services.AddScoped<IDeveloperRepository, DeveloperRepository>();
             services.AddScoped<IDashboardRepository, DashboardRepository>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddServices(this IServiceCollection services)
+        {
+            services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<ITaskService, TaskService>();
+            services.AddScoped<IDeveloperService, DeveloperService>();
+            services.AddScoped<IDashboardService, DashboardService>();
 
             return services;
         }
