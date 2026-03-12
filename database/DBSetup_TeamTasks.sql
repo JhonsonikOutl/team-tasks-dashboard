@@ -179,7 +179,8 @@ begin
         t.EstimatedComplexity,
         t.DueDate,
         t.CompletionDate,
-        t.CreatedAt
+        t.CreatedAt,
+        count(*) over() as TotalCount
     from Tasks t
     inner join TaskStatuses ts on ts.Id = t.StatusId
     inner join TaskPriorities tp on tp.Id = t.PriorityId
