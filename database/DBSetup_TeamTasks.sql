@@ -36,21 +36,24 @@ go
 if not exists (select * from sysobjects where name = 'ProjectStatuses' and xtype = 'U')
 create table ProjectStatuses (
     Id int identity(1,1) primary key,
-    Description nvarchar(50) not null unique
+    Description nvarchar(50) not null unique,
+    DisplayName nvarchar(50) not null
 )
 
 -- TaskStatuses
 if not exists (select * from sysobjects where name = 'TaskStatuses' and xtype = 'U')
 create table TaskStatuses (
     Id int identity(1,1) primary key,
-    Description nvarchar(50) not null unique
+    Description nvarchar(50) not null unique,
+    DisplayName nvarchar(50) not null
 )
 
 -- TaskPriorities
 if not exists (select * from sysobjects where name = 'TaskPriorities' and xtype = 'U')
 create table TaskPriorities (
     Id int identity(1,1) primary key,
-    Description nvarchar(50) not null unique
+    Description nvarchar(50) not null unique,
+    DisplayName nvarchar(50) not null
 )
 
 -- Developers
@@ -138,13 +141,14 @@ begin
         p.Name,
         p.ClientName,
         ps.Description as Status,
+        ps.DisplayName as StatusDisplay,
         count(t.TaskId) as TotalTasks,
         count(case when t.StatusId <> @CompletedStatusId then 1 end) as OpenTasks,
         count(case when t.StatusId = @CompletedStatusId then 1 end) as CompletedTasks
     from Projects p
     inner join ProjectStatuses ps on ps.Id = p.StatusId
     left join Tasks t on t.ProjectId = p.ProjectId
-    group by p.ProjectId, p.Name, p.ClientName, ps.Description
+    group by p.ProjectId, p.Name, p.ClientName, ps.Description, ps.DisplayName
 end
 go
 
@@ -160,6 +164,7 @@ begin
         p.Name,
         p.ClientName,
         ps.Description as Status,
+        ps.DisplayName as StatusDisplay,
         p.StartDate,
         p.EndDate
     from Projects p
@@ -187,7 +192,9 @@ begin
         t.AssigneeId,
         d.FirstName + ' ' + d.LastName as AssigneeName,
         ts.Description as Status,
+        ts.DisplayName as StatusDisplay,
         tp.Description as Priority,
+        tp.DisplayName as PriorityDisplay,
         t.EstimatedComplexity,
         t.DueDate,
         t.CompletionDate,
@@ -221,7 +228,9 @@ begin
         t.AssigneeId,
         d.FirstName + ' ' + d.LastName as AssigneeName,
         ts.Description as Status,
+        ts.DisplayName as StatusDisplay,
         tp.Description as Priority,
+        tp.DisplayName as PriorityDisplay,
         t.EstimatedComplexity,
         t.DueDate,
         t.CompletionDate,
@@ -326,9 +335,9 @@ begin
         select
             t.AssigneeId,
             avg(cast(
-                case 
-                    when datediff(day, t.DueDate, t.CompletionDate) > 0 
-                    then datediff(day, t.DueDate, t.CompletionDate) 
+                case
+                    when datediff(day, t.DueDate, t.CompletionDate) > 0
+                    then datediff(day, t.DueDate, t.CompletionDate)
                 else 0 end as float)) as AvgDelayDays
         from Tasks t
         where t.StatusId = @CompletedStatusId
@@ -373,43 +382,43 @@ merge projectstatuses as target
 using
 (
     values
-        ('Planned'),
-        ('In Progress'),
-        ('Completed')
-) as source (description)
+        ('Planned',     'Planificado'),
+        ('In Progress', 'En progreso'),
+        ('Completed',   'Completado')
+) as source (description, displayname)
 on target.description = source.description
 when not matched then
-insert (description)
-values (source.description);
+insert (description, displayname)
+values (source.description, source.displayname);
 
 
 merge taskstatuses as target
 using
 (
     values
-        ('To Do'),
-        ('In Progress'),
-        ('Blocked'),
-        ('Completed')
-) as source (description)
+        ('To Do',       'Por hacer'),
+        ('In Progress', 'En progreso'),
+        ('Blocked',     'Bloqueado'),
+        ('Completed',   'Completado')
+) as source (description, displayname)
 on target.description = source.description
 when not matched then
-insert (description)
-values (source.description);
+insert (description, displayname)
+values (source.description, source.displayname);
 
 
 merge taskpriorities as target
 using
 (
     values
-        ('Low'),
-        ('Medium'),
-        ('High')
-) as source (description)
+        ('Low',    'Baja'),
+        ('Medium', 'Media'),
+        ('High',   'Alta')
+) as source (description, displayname)
 on target.description = source.description
 when not matched then
-insert (description)
-values (source.description);
+insert (description, displayname)
+values (source.description, source.displayname);
 
 
 declare @statusplanned int = (select id from projectstatuses where description = 'Planned');
