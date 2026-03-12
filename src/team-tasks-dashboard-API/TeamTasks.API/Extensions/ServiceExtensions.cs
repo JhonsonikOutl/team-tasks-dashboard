@@ -35,6 +35,7 @@ namespace TeamTasks.API.Extensions
             services.AddScoped<IDeveloperRepository, DeveloperRepository>();
             services.AddScoped<IDashboardRepository, DashboardRepository>();
             services.AddScoped<ISeedRepository, SeedRepository>();
+            services.AddScoped<ICatalogRepository, CatalogRepository>();
 
             return services;
         }
@@ -46,6 +47,7 @@ namespace TeamTasks.API.Extensions
             services.AddScoped<IDeveloperService, DeveloperService>();
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<ISeedService, SeedService>();
+            services.AddScoped<ICatalogService, CatalogService>();
 
             return services;
         }
