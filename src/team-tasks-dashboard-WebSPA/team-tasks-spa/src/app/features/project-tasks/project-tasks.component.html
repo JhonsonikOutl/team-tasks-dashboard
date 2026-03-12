@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="card-body p-0">
-      <app-datatable [columns]="columns" [data]="tasks" (rowClick)="onTaskClick($event)"></app-datatable>
+      <app-datatable [columns]="columns" [data]="tasks" [templates]="templates" (rowClick)="onTaskClick($event)"></app-datatable>
     </div>
     <div class="card-footer d-flex justify-content-between align-items-center px-4 py-2">
       <span class="text-muted small">Página {{ page }}</span>
@@ -80,6 +80,14 @@
     </div>
   </div>
 </ng-container>
+
+<ng-template #statusTpl let-row>
+  <span class="badge" [ngClass]="'bg-' + (row.status | statusbadge)">{{ row.status }}</span>
+</ng-template>
+
+<ng-template #priorityTpl let-row>
+  <span class="badge" [ngClass]="'bg-' + (row.priority | statusbadge:'priority')">{{ row.priority }}</span>
+</ng-template>
 
 <ng-template #detailContent>
   <p class="detail-label">Título</p>

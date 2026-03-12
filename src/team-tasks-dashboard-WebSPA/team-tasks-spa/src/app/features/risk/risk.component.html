@@ -18,6 +18,6 @@
 
 <ng-template #riskTpl let-row>
   <span class="badge" [ngClass]="row.highRiskFlag === 1 ? 'bg-danger' : 'bg-success'">
-    {{ row.highRiskFlag === 1 ? 'Alto riesgo' : 'Normal' }}
+    {{ row.highRiskFlag === 1 ? 'Alto' : 'Normal' }}
   </span>
 </ng-template>

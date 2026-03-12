@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -47,15 +47,11 @@ export class ProjectTasksComponent implements OnInit {
     { id: 4, label: 'Completed' }
   ];
 
-  columns: TableColumn[] = [
-    { key: 'title',               label: 'Título',      sortable: true },
-    { key: 'assigneeName',        label: 'Asignado a' },
-    { key: 'status',              label: 'Estado' },
-    { key: 'priority',            label: 'Prioridad' },
-    { key: 'estimatedComplexity', label: 'Complejidad' },
-    { key: 'createdAt',           label: 'Creada' },
-    { key: 'dueDate',             label: 'Vencimiento' }
-  ];
+  @ViewChild('statusTpl',   { static: true }) statusTpl!:   TemplateRef<any>;
+  @ViewChild('priorityTpl', { static: true }) priorityTpl!: TemplateRef<any>;
+
+  columns: TableColumn[] = [];
+  templates: { [key: string]: TemplateRef<any> } = {};
 
   chartData: ChartData<'doughnut'> = {
     labels: ['To Do', 'In Progress', 'Blocked', 'Completed'],
@@ -90,6 +86,22 @@ export class ProjectTasksComponent implements OnInit {
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
+
+    this.columns = [
+      { key: 'title', label: 'Título', sortable: true},
+      { key: 'assigneeName', label: 'Asignado a'},
+      { key: 'status', label: 'Estado', template: 'status'},
+      { key: 'priority', label: 'Prioridad', template: 'priority'},
+      { key: 'estimatedComplexity', label: 'Complejidad' },
+      { key: 'createdAt', label: 'Creada'},
+      { key: 'dueDate', label: 'Vencimiento'}
+    ];
+
+    this.templates = {
+      status:   this.statusTpl,
+      priority: this.priorityTpl
+    };
+
     this.projectService.getById(id).subscribe(p => this.project = p);
     this.developerService.getActive().subscribe(d => this.developers = d);
     this.loadTasks();
