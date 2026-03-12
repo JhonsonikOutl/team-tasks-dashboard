@@ -14,5 +14,6 @@
         public DateOnly DueDate { get; set; }
         public DateOnly? CompletionDate { get; set; }
         public DateTime CreatedAt { get; set; }
+        public int TotalCount {get; set;}
     }
 }
