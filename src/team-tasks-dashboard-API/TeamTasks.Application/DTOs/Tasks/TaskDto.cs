@@ -9,7 +9,9 @@
         public int? AssigneeId { get; set; }
         public string? AssigneeName { get; set; }
         public string? Status { get; set; }
+        public string? StatusDisplay { get; set; }
         public string? Priority { get; set; }
+        public string? PriorityDisplay { get; set; }
         public int EstimatedComplexity { get; set; }
         public DateOnly DueDate { get; set; }
         public DateOnly? CompletionDate { get; set; }

@@ -1,5 +1,6 @@
 ﻿using Moq;
 using TeamTasks.Application.DTOs.Developers;
+using TeamTasks.Application.DTOs.Projects;
 using TeamTasks.Application.DTOs.Tasks;
 using TeamTasks.Application.Interfaces.Repositories;
 using TeamTasks.Application.Services;
@@ -63,7 +64,7 @@ namespace TeamTasks.Tests.Services
         [Fact]
         public async Task CreateAsync_ProjectNotFound_ThrowsArgumentException()
         {
-            _projectRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync((Project?)null);
+            _projectRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync((ProjectDetailDto?)null);
 
             await Assert.ThrowsAsync<ArgumentException>(() => _sut.CreateAsync(BuildCreateTaskDto()));
         }
@@ -71,7 +72,7 @@ namespace TeamTasks.Tests.Services
         [Fact]
         public async Task CreateAsync_DeveloperNotFound_ThrowsArgumentException()
         {
-            _projectRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new Project());
+            _projectRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new ProjectDetailDto());
             _developerRepositoryMock.Setup(r => r.GetActiveAsync()).ReturnsAsync(new List<DeveloperDto>());
 
             await Assert.ThrowsAsync<ArgumentException>(() => _sut.CreateAsync(BuildCreateTaskDto(assigneeId: 99)));
@@ -80,7 +81,7 @@ namespace TeamTasks.Tests.Services
         [Fact]
         public async Task CreateAsync_ComplexityBelowRange_ThrowsArgumentException()
         {
-            _projectRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new Project());
+            _projectRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new ProjectDetailDto());
 
             await Assert.ThrowsAsync<ArgumentException>(() => _sut.CreateAsync(BuildCreateTaskDto(estimatedComplexity: 0)));
         }
@@ -88,7 +89,7 @@ namespace TeamTasks.Tests.Services
         [Fact]
         public async Task CreateAsync_ComplexityAboveRange_ThrowsArgumentException()
         {
-            _projectRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new Project());
+            _projectRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new ProjectDetailDto());
 
             await Assert.ThrowsAsync<ArgumentException>(() => _sut.CreateAsync(BuildCreateTaskDto(estimatedComplexity: 6)));
         }
@@ -96,7 +97,7 @@ namespace TeamTasks.Tests.Services
         [Fact]
         public async Task CreateAsync_DueDateInThePast_ThrowsArgumentException()
         {
-            _projectRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new Project());
+            _projectRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new ProjectDetailDto());
 
             await Assert.ThrowsAsync<ArgumentException>(() => _sut.CreateAsync(BuildCreateTaskDto(dueDate: DateOnly.FromDateTime(DateTime.Today.AddDays(-1)))));
         }
@@ -106,7 +107,7 @@ namespace TeamTasks.Tests.Services
         {
             var expected = new TaskDto { TaskId = 1, Title = "Tarea de prueba" };
 
-            _projectRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new Project());
+            _projectRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new ProjectDetailDto());
             _taskRepositoryMock.Setup(r => r.CreateAsync(It.IsAny<TaskItem>())).ReturnsAsync(new TaskItem { TaskId = 1 });
             _taskRepositoryMock.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(expected);
 

@@ -3,7 +3,6 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using TeamTasks.Application.DTOs.Projects;
 using TeamTasks.Application.Interfaces.Repositories;
-using TeamTasks.Domain.Entities;
 using TeamTasks.Infrastructure.Options;
 
 namespace TeamTasks.Infrastructure.Repositories
@@ -23,10 +22,10 @@ namespace TeamTasks.Infrastructure.Repositories
             return await connection.QueryAsync<ProjectDto>("sp_get_all_projects", commandType: System.Data.CommandType.StoredProcedure);
         }
 
-        public async Task<Project?> GetByIdAsync(int id)
+        public async Task<ProjectDetailDto?> GetByIdAsync(int id)
         {
             using var connection = new SqlConnection(_connectionString);
-            return await connection.QueryFirstOrDefaultAsync<Project>("sp_get_project_by_id", new { ProjectId = id }, commandType: System.Data.CommandType.StoredProcedure);
+            return await connection.QueryFirstOrDefaultAsync<ProjectDetailDto>("sp_get_project_by_id", new { ProjectId = id }, commandType: System.Data.CommandType.StoredProcedure);
         }
     }
 }

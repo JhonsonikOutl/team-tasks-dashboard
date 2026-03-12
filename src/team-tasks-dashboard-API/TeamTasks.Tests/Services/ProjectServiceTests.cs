@@ -2,7 +2,6 @@
 using TeamTasks.Application.DTOs.Projects;
 using TeamTasks.Application.Interfaces.Repositories;
 using TeamTasks.Application.Services;
-using TeamTasks.Domain.Entities;
 
 namespace TeamTasks.Tests.Services
 {
@@ -46,7 +45,7 @@ namespace TeamTasks.Tests.Services
         [Fact]
         public async Task GetByIdAsync_ExistingProject_ReturnsMappedProjectDto()
         {
-            var project = new Project
+            var project = new ProjectDetailDto
             {
                 ProjectId = 1,
                 Name = "Proyecto ABC",
@@ -65,7 +64,7 @@ namespace TeamTasks.Tests.Services
         [Fact]
         public async Task GetByIdAsync_NonExistingProject_ReturnsNull()
         {
-            _projectRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync((Project?)null);
+            _projectRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync((ProjectDetailDto?)null);
 
             var result = await _sut.GetByIdAsync(99);
 
@@ -75,8 +74,8 @@ namespace TeamTasks.Tests.Services
         [Fact]
         public async Task GetByIdAsync_ExistingProject_DoesNotReturnOtherProjects()
         {
-            _projectRepositoryMock.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(new Project { ProjectId = 1 });
-            _projectRepositoryMock.Setup(r => r.GetByIdAsync(2)).ReturnsAsync((Project?)null);
+            _projectRepositoryMock.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(new ProjectDetailDto { ProjectId = 1 });
+            _projectRepositoryMock.Setup(r => r.GetByIdAsync(2)).ReturnsAsync((ProjectDetailDto?)null);
 
             var result1 = await _sut.GetByIdAsync(1);
             var result2 = await _sut.GetByIdAsync(2);
