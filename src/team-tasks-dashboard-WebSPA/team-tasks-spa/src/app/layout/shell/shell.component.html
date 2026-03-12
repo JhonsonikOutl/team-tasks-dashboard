@@ -1,0 +1,41 @@
+<div class="shell" [class.sidebar-collapsed]="!sidebarOpen()">
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="brand" *ngIf="sidebarOpen()">
+        <span class="brand-dot"></span>Team<span class="brand-accent">Tasks</span>
+      </span>
+      <button class="btn-sidebar-toggle" (click)="toggleSidebar()"
+        [title]="sidebarOpen() ? 'Contraer' : 'Expandir'">
+        <i class="bi" [ngClass]="sidebarOpen() ? 'bi-chevron-left' : 'bi-chevron-right'"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a *ngFor="let item of navItems"
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        class="nav-item"
+        [title]="item.label">
+        <i class="bi {{ item.icon }} nav-icon"></i>
+        <span class="nav-label" *ngIf="sidebarOpen()">{{ item.label }}</span>
+      </a>
+    </nav>
+  </aside>
+
+  <div class="sidebar-overlay" *ngIf="sidebarOpen()" (click)="toggleSidebar()"></div>
+
+  <div class="shell-main">
+    <header class="topbar">
+      <button class="btn-topbar-toggle" (click)="toggleSidebar()"
+        [title]="sidebarOpen() ? 'Contraer menú' : 'Expandir menú'">
+        <i class="bi bi-list"></i>
+      </button>
+      <span class="topbar-title">Team Tasks Dashboard</span>
+    </header>
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+</div>
