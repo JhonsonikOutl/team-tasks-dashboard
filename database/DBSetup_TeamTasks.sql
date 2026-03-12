@@ -155,23 +155,16 @@ as
 begin
     set nocount on
 
-    declare @CompletedStatusId int = (select Id from TaskStatuses where Description = 'Completed')
-
     select
         p.ProjectId,
         p.Name,
         p.ClientName,
         ps.Description as Status,
         p.StartDate,
-        p.EndDate,
-        count(t.TaskId) as TotalTasks,
-        count(case when t.StatusId <> @CompletedStatusId then 1 end) as OpenTasks,
-        count(case when t.StatusId = @CompletedStatusId then 1 end) as CompletedTasks
+        p.EndDate
     from Projects p
     inner join ProjectStatuses ps on ps.Id = p.StatusId
-    left join Tasks t on t.ProjectId = p.ProjectId
     where p.ProjectId = @ProjectId
-    group by p.ProjectId, p.Name, p.ClientName, ps.Description, p.StartDate, p.EndDate
 end
 go
 
