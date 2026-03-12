@@ -11,6 +11,7 @@ export interface Task {
   dueDate: string;
   completionDate: string | null;
   createdAt: string;
+  totalCount: number;
 }
 
 export interface CreateTask {

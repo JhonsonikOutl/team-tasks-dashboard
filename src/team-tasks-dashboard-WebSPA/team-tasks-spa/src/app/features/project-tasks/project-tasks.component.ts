@@ -34,7 +34,11 @@ export class ProjectTasksComponent implements OnInit {
   filterAssigneeId: number | null = null;
   page = 1;
   pageSize = 10;
-  hasNextPage = false;
+  totalCount = 0;
+
+  get hasNextPage(): boolean {
+    return this.page * this.pageSize < this.totalCount;
+  }
 
   statuses = [
     { id: 1, label: 'To Do' },
@@ -94,11 +98,11 @@ export class ProjectTasksComponent implements OnInit {
   loadTasks(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.projectService
-      .getTasksByProject(id, this.filterStatusId, this.filterAssigneeId, this.page, this.pageSize + 1)
+      .getTasksByProject(id, this.filterStatusId, this.filterAssigneeId, this.page, this.pageSize)
       .subscribe(data => {
-        this.hasNextPage = data.length > this.pageSize;
-        this.tasks = data.slice(0, this.pageSize);
-        this.updateChart(this.tasks);
+        this.tasks = data;
+        this.totalCount = data.length > 0 ? data[0].totalCount : 0;
+        this.updateChart(data);
       });
   }
 
