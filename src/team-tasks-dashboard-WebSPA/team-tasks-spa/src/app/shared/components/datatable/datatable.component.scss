@@ -1,0 +1,22 @@
+.table tbody tr.clickable {
+  cursor: pointer;
+}
+
+.sortable {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+
+  &:hover { color: var(--text) !important; }
+
+  .sort-icon {
+    margin-left: 4px;
+    font-size: 0.65rem;
+    opacity: 0.5;
+  }
+
+  &.active .sort-icon {
+    opacity: 1;
+    color: var(--accent);
+  }
+}

@@ -1,0 +1,22 @@
+.navbar {
+  background-color: var(--surface) !important;
+  border-bottom: 1px solid var(--border);
+}
+
+.brand-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  margin-right: 6px;
+}
+
+.brand-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+
+  span { color: var(--accent); }
+}
