@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Dapper;
+using Microsoft.EntityFrameworkCore;
 using TeamTasks.Application.Interfaces.Repositories;
 using TeamTasks.Application.Interfaces.Services;
 using TeamTasks.Application.Services;
 using TeamTasks.Infrastructure.Options;
 using TeamTasks.Infrastructure.Persistence;
 using TeamTasks.Infrastructure.Repositories;
+using TeamTasks.Infrastructure.TypeHandlers;
 
 namespace TeamTasks.API.Extensions
 {
@@ -12,6 +14,9 @@ namespace TeamTasks.API.Extensions
     {
         public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
         {
+
+            SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
+
             services.Configure<DatabaseOptions>(options =>
             {
                 options.ConnectionString = configuration.GetConnectionString("DefaultConnection")!;
