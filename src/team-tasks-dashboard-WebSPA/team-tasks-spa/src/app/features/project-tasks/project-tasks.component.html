@@ -1,0 +1,129 @@
+<div class="container-fluid py-4 px-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <a routerLink="/dashboard" class="text-muted small d-block mb-1">← Volver al dashboard</a>
+      <h2 class="fw-bold mb-0 page-title-accent">{{ project?.name || 'Proyecto' }}</h2>
+      <span class="text-muted small">{{ project?.clientName }}</span>
+    </div>
+    <button class="btn btn-accent" (click)="showTaskForm = true">+ Nueva tarea</button>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header px-4 py-3">
+      <div class="row g-2">
+        <div class="col-6 col-md-4">
+          <select class="form-select form-select-sm" [(ngModel)]="filterStatusId" (change)="applyFilters()">
+            <option [ngValue]="null">Todos los estados</option>
+            <option *ngFor="let s of statuses" [ngValue]="s.id">{{ s.label }}</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-4">
+          <select class="form-select form-select-sm" [(ngModel)]="filterAssigneeId" (change)="applyFilters()">
+            <option [ngValue]="null">Todos los desarrolladores</option>
+            <option *ngFor="let d of developers" [ngValue]="d.developerId">{{ d.fullName }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="card-body p-0">
+      <app-datatable [columns]="columns" [data]="tasks" (rowClick)="onTaskClick($event)"></app-datatable>
+    </div>
+    <div class="card-footer d-flex justify-content-between align-items-center px-4 py-2">
+      <span class="text-muted small">Página {{ page }}</span>
+      <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-outline-secondary" (click)="prevPage()" [disabled]="page === 1">← Anterior</button>
+        <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()" [disabled]="!hasNextPage">Siguiente →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-layout">
+
+    <div class="card chart-card">
+      <div class="card-header px-4 py-3">
+        <h6 class="mb-0">Tareas por estado</h6>
+      </div>
+      <div class="card-body chart-container">
+        <canvas baseChart [data]="chartData" [options]="chartOptions" type="doughnut"></canvas>
+      </div>
+    </div>
+
+    <div class="detail-panel-desktop" *ngIf="selectedTask">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center px-4 py-3">
+          <h6 class="mb-0 fw-bold">Detalle de tarea</h6>
+          <button class="btn-close btn-close-white" (click)="closeDetail()"></button>
+        </div>
+        <div class="card-body px-4 py-3">
+          <ng-container *ngTemplateOutlet="detailContent"></ng-container>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<ng-container *ngIf="selectedTask">
+  <div class="modal-backdrop fade show d-md-none"></div>
+  <div class="modal fade show d-block d-md-none" tabindex="-1" (click)="closeDetail()">
+    <div class="modal-dialog modal-dialog-scrollable" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Detalle de tarea</h5>
+          <button class="btn-close btn-close-white" (click)="closeDetail()"></button>
+        </div>
+        <div class="modal-body">
+          <ng-container *ngTemplateOutlet="detailContent"></ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #detailContent>
+  <p class="detail-label">Título</p>
+  <p class="fw-semibold mb-3">{{ selectedTask?.title }}</p>
+
+  <p class="detail-label">Descripción</p>
+  <p class="mb-3">{{ selectedTask?.description || '—' }}</p>
+
+  <div class="row mb-3">
+    <div class="col-6">
+      <p class="detail-label">Estado</p>
+      <span class="badge" [ngClass]="'bg-' + (selectedTask?.status | statusbadge)">{{ selectedTask?.status }}</span>
+    </div>
+    <div class="col-6">
+      <p class="detail-label">Prioridad</p>
+      <span class="badge" [ngClass]="'bg-' + (selectedTask?.priority | statusbadge:'priority')">{{ selectedTask?.priority }}</span>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-6">
+      <p class="detail-label">Asignado a</p>
+      <p class="mb-0">{{ selectedTask?.assigneeName || '—' }}</p>
+    </div>
+    <div class="col-6">
+      <p class="detail-label">Complejidad</p>
+      <p class="mb-0">{{ selectedTask?.estimatedComplexity }}</p>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-6">
+      <p class="detail-label">Vencimiento</p>
+      <p class="mb-0">{{ selectedTask?.dueDate }}</p>
+    </div>
+    <div class="col-6">
+      <p class="detail-label">Creada</p>
+      <p class="mb-0">{{ selectedTask?.createdAt | date:'dd/MM/yyyy' }}</p>
+    </div>
+  </div>
+</ng-template>
+
+<app-task-form
+  *ngIf="showTaskForm"
+  (close)="showTaskForm = false"
+  (taskCreated)="onTaskCreated()">
+</app-task-form>
