@@ -45,7 +45,8 @@ if not exists (select * from sysobjects where name = 'TaskStatuses' and xtype = 
 create table TaskStatuses (
     Id int identity(1,1) primary key,
     Description nvarchar(50) not null unique,
-    DisplayName nvarchar(50) not null
+    DisplayName nvarchar(50) not null,
+    ColorClass nvarchar(50) not null
 )
 
 -- TaskPriorities
@@ -53,7 +54,8 @@ if not exists (select * from sysobjects where name = 'TaskPriorities' and xtype 
 create table TaskPriorities (
     Id int identity(1,1) primary key,
     Description nvarchar(50) not null unique,
-    DisplayName nvarchar(50) not null
+    DisplayName nvarchar(50) not null,
+    ColorClass nvarchar(50) not null
 )
 
 -- Developers
@@ -374,6 +376,24 @@ begin
 end
 go
 
+-- sp_get_task_statuses
+create or alter procedure sp_get_task_statuses
+as
+begin
+    set nocount on
+    select Id, Description, DisplayName from TaskStatuses
+end
+go
+
+-- sp_get_task_priorities
+create or alter procedure sp_get_task_priorities
+as
+begin
+    set nocount on
+    select Id, Description, DisplayName from TaskPriorities
+end
+go
+
 -- ===================
 -- Seed datos mínimos
 -- ===================
@@ -396,29 +416,29 @@ merge taskstatuses as target
 using
 (
     values
-        ('To Do',       'Por hacer'),
-        ('In Progress', 'En progreso'),
-        ('Blocked',     'Bloqueado'),
-        ('Completed',   'Completado')
-) as source (description, displayname)
+        ('To Do',       'Por hacer',   'secondary'),
+        ('In Progress', 'En progreso', 'primary'),
+        ('Blocked',     'Bloqueado',   'danger'),
+        ('Completed',   'Completado',  'success')
+) as source (description, displayname, colorclass)
 on target.description = source.description
 when not matched then
-insert (description, displayname)
-values (source.description, source.displayname);
+insert (description, displayname, colorclass)
+values (source.description, source.displayname, source.colorclass);
 
 
 merge taskpriorities as target
 using
 (
     values
-        ('Low',    'Baja'),
-        ('Medium', 'Media'),
-        ('High',   'Alta')
-) as source (description, displayname)
+        ('Low',    'Baja',  'success'),
+        ('Medium', 'Media', 'warning'),
+        ('High',   'Alta',  'danger')
+) as source (description, displayname, colorclass)
 on target.description = source.description
 when not matched then
-insert (description, displayname)
-values (source.description, source.displayname);
+insert (description, displayname, colorclass)
+values (source.description, source.displayname, source.colorclass);
 
 
 declare @statusplanned int = (select id from projectstatuses where description = 'Planned');
