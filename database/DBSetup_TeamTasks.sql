@@ -107,6 +107,18 @@ as
 begin
     set nocount on
 
+    if not exists (select 1 from Projects where ProjectId = @ProjectId)
+    begin
+        raiserror('ProjectId %d does not exist.', 16, 1, @ProjectId)
+        return
+    end
+
+    if @AssigneeId is not null and not exists (select 1 from Developers where DeveloperId = @AssigneeId)
+    begin
+        raiserror('AssigneeId %d does not exist.', 16, 1, @AssigneeId)
+        return
+    end
+
     insert into Tasks (ProjectId, Title, Description, AssigneeId, StatusId, PriorityId, EstimatedComplexity, DueDate)
     output inserted.TaskId
     values (@ProjectId, @Title, @Description, @AssigneeId, @StatusId, @PriorityId, @EstimatedComplexity, @DueDate)
@@ -313,7 +325,11 @@ begin
     ;with Completed as (
         select
             t.AssigneeId,
-            avg(cast(isnull(datediff(day, t.DueDate, t.CompletionDate), 0) as float)) as AvgDelayDays
+            avg(cast(
+                case 
+                    when datediff(day, t.DueDate, t.CompletionDate) > 0 
+                    then datediff(day, t.DueDate, t.CompletionDate) 
+                else 0 end as float)) as AvgDelayDays
         from Tasks t
         where t.StatusId = @CompletedStatusId
             and t.CompletionDate is not null
@@ -337,8 +353,8 @@ begin
         ot.LatestDueDate,
         dateadd(day, isnull(c.AvgDelayDays, 0), ot.LatestDueDate) as PredictedCompletionDate,
         case
-            when dateadd(day, isnull(c.AvgDelayDays, 0), ot.LatestDueDate) > ot.LatestDueDate
-                or isnull(c.AvgDelayDays, 0) >= @RiskThreshold
+            when isnull(c.AvgDelayDays, 0) >= @RiskThreshold
+                or dateadd(day, isnull(c.AvgDelayDays, 0), ot.LatestDueDate) > getdate()
             then 1 else 0
         end as HighRiskFlag
     from Developers d
