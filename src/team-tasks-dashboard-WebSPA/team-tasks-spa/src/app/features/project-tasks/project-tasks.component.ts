@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -8,6 +8,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { ProjectService } from '../../core/services/project.service';
 import { DeveloperService } from '../../core/services/developer.service';
 import { CatalogService } from '../../core/services/catalog.service';
+import { TaskService } from '../../core/services/task.service';
 import { Project } from '../../core/models/project.model';
 import { Task } from '../../core/models/task.model';
 import { Developer } from '../../core/models/developer.model';
@@ -37,6 +38,7 @@ export class ProjectTasksComponent implements OnInit {
   page = 1;
   pageSize = 10;
   totalCount = 0;
+  activeDropdownTaskId: number | null = null;
 
   get hasNextPage(): boolean {
     return this.page * this.pageSize < this.totalCount;
@@ -77,7 +79,9 @@ export class ProjectTasksComponent implements OnInit {
     private route: ActivatedRoute,
     private projectService: ProjectService,
     private developerService: DeveloperService,
-    public catalogService: CatalogService
+    private taskService: TaskService,
+    public catalogService: CatalogService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -109,6 +113,41 @@ export class ProjectTasksComponent implements OnInit {
     this.projectService.getById(id).subscribe(p => this.project = p);
     this.developerService.getActive().subscribe(d => this.developers = d);
     this.loadTasks();
+  }
+
+  // Cierra el dropdown
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.activeDropdownTaskId = null;
+  }
+
+  toggleStatusDropdown(row: Task): void {
+    this.activeDropdownTaskId = this.activeDropdownTaskId === row.taskId ? null : row.taskId;
+  }
+
+  onStatusChange(row: Task, newStatus: CatalogItem): void {
+    if (newStatus.description === row.status) {
+      this.activeDropdownTaskId = null;
+      return;
+    }
+
+    this.taskService.updateStatus(row.taskId, { statusId: newStatus.id }).subscribe({
+      next: () => {
+        row.status        = newStatus.description;
+        row.statusDisplay = newStatus.displayName;
+        this.activeDropdownTaskId = null;
+        this.updateChart(this.tasks);
+
+        if (this.selectedTask?.taskId === row.taskId) {
+          this.selectedTask = { ...row };
+        }
+
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.activeDropdownTaskId = null;
+      }
+    });
   }
 
   loadTasks(): void {

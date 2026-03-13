@@ -82,7 +82,23 @@
 </ng-container>
 
 <ng-template #statusTpl let-row>
-  <span class="badge bg-{{ catalogService.getStatusColor(row.status) }}">{{ row.statusDisplay }}</span>
+  <div class="status-dropdown-wrapper" (click)="$event.stopPropagation()">
+    <span class="badge bg-{{ catalogService.getStatusColor(row.status) }} status-badge-btn"
+          [title]="'Cambiar estado'"
+          (click)="toggleStatusDropdown(row)">
+      {{ row.statusDisplay }}
+      <i class="bi bi-chevron-down ms-1" style="font-size: 0.65rem;"></i>
+    </span>
+    <ul class="status-dropdown-menu" *ngIf="activeDropdownTaskId === row.taskId">
+      <li *ngFor="let s of statuses">
+        <button class="status-dropdown-item"
+                [class.active]="s.description === row.status"
+                (click)="onStatusChange(row, s)">
+          <span class="badge bg-{{ catalogService.getStatusColor(s.description) }} me-2">{{ s.displayName }}</span>
+        </button>
+      </li>
+    </ul>
+  </div>
 </ng-template>
 
 <ng-template #priorityTpl let-row>
@@ -96,7 +112,7 @@
   <p class="detail-label">Descripción</p>
   <p class="mb-3">{{ selectedTask?.description || '—' }}</p>
 
-<div class="row mb-3">
+  <div class="row mb-3">
     <div class="col-6">
       <p class="detail-label">Estado</p>
       <span class="badge bg-{{ catalogService.getStatusColor(selectedTask?.status ?? '') }}">{{ selectedTask?.statusDisplay }}</span>
