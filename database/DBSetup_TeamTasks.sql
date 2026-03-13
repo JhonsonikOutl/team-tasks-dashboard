@@ -381,7 +381,7 @@ create or alter procedure sp_get_task_statuses
 as
 begin
     set nocount on
-    select Id, Description, DisplayName from TaskStatuses
+    select Id, Description, DisplayName, ColorClass from TaskStatuses
 end
 go
 
@@ -390,7 +390,7 @@ create or alter procedure sp_get_task_priorities
 as
 begin
     set nocount on
-    select Id, Description, DisplayName from TaskPriorities
+    select Id, Description, DisplayName, ColorClass from TaskPriorities
 end
 go
 
