@@ -5,9 +5,9 @@ namespace TeamTasks.Application.Interfaces.Repositories
 {
     public interface ITaskRepository
     {
-        Task<IEnumerable<TaskDto>> GetByProjectIdAsync(int projectId, int? statusId, int? assigneeId, int page, int pageSize);
+        Task<IEnumerable<TaskDto>> GetByProjectIdAsync(int projectId, TaskFilterDto filter);
         Task<TaskDto?> GetByIdAsync(int id);
         Task<TaskItem> CreateAsync(TaskItem task);
-        Task UpdateStatusAsync(int id, int statusId, int? priorityId, int? estimatedComplexity);
+        Task UpdateStatusAsync(int id, UpdateTaskStatusDto filterUpdate);
     }
 }

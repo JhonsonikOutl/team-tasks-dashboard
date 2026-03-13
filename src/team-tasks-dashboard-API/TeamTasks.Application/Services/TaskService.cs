@@ -19,9 +19,9 @@ namespace TeamTasks.Application.Services
             _developerRepository = developerRepository;
         }
 
-        public async Task<IEnumerable<TaskDto>> GetByProjectIdAsync(int projectId, int? statusId, int? assigneeId, int page, int pageSize)
+        public async Task<IEnumerable<TaskDto>> GetByProjectIdAsync(int projectId, TaskFilterDto filter)
         {
-            return await _taskRepository.GetByProjectIdAsync(projectId, statusId, assigneeId, page, pageSize);
+            return await _taskRepository.GetByProjectIdAsync(projectId, filter);
         }
 
         public async Task<TaskDto?> GetByIdAsync(int id)
@@ -66,22 +66,22 @@ namespace TeamTasks.Application.Services
             return (await _taskRepository.GetByIdAsync(created.TaskId))!;
         }
 
-        public async Task UpdateStatusAsync(int id, int statusId, int? priorityId, int? estimatedComplexity)
+        public async Task UpdateStatusAsync(int id, UpdateTaskStatusDto filterUpdate)
         {
             var task = await _taskRepository.GetByIdAsync(id);
             if (task is null)
                 throw new ArgumentException($"La tarea con Id {id} no existe.");
 
-            if (!Enum.IsDefined(typeof(Enums.TaskStatus), statusId))
+            if (!Enum.IsDefined(typeof(Enums.TaskStatus), filterUpdate.StatusId))
                 throw new ArgumentException("El estado indicado no es valido.");
 
-            if (priorityId.HasValue && !Enum.IsDefined(typeof(Enums.TaskPriority), priorityId.Value))
+            if (filterUpdate.PriorityId.HasValue && !Enum.IsDefined(typeof(Enums.TaskPriority), filterUpdate.PriorityId!))
                 throw new ArgumentException("La prioridad indicada no es valida.");
 
-            if (estimatedComplexity.HasValue && (estimatedComplexity < 1 || estimatedComplexity > 5))
+            if (filterUpdate.EstimatedComplexity.HasValue && (filterUpdate.EstimatedComplexity < 1 || filterUpdate.EstimatedComplexity > 5))
                 throw new ArgumentException("La complejidad estimada debe estar entre 1 y 5.");
 
-            await _taskRepository.UpdateStatusAsync(id, statusId, priorityId, estimatedComplexity);
+            await _taskRepository.UpdateStatusAsync(id, filterUpdate);
         }
     }
 }

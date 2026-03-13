@@ -32,9 +32,19 @@ namespace TeamTasks.Tests.Services
         public async Task GetByProjectIdAsync_ReturnsTasksFromRepository()
         {
             var expected = new List<TaskDto> { new() { TaskId = 1 }, new() { TaskId = 2 } };
-            _taskRepositoryMock.Setup(r => r.GetByProjectIdAsync(1, null, null, 1, 10)).ReturnsAsync(expected);
 
-            var result = await _sut.GetByProjectIdAsync(1, null, null, 1, 10);
+            TaskFilterDto filter = new()
+            {
+                StatusId = null,
+                AssigneeId = null,
+                Page = 1,
+                PageSize = 10,
+            };
+
+            _taskRepositoryMock.Setup(r => r.GetByProjectIdAsync(1, filter)).ReturnsAsync(expected);
+
+
+            var result = await _sut.GetByProjectIdAsync(1, filter);
 
             Assert.Equal(2, result.Count());
         }

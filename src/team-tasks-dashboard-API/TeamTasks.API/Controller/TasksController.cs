@@ -31,9 +31,9 @@ namespace TeamTasks.API.Controller
         }
 
         [HttpPut("{id}/status")]
-        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateTaskStatusDto dto)
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateTaskStatusDto filterUpdate)
         {
-            await _taskService.UpdateStatusAsync(id, dto.StatusId, dto.PriorityId, dto.EstimatedComplexity);
+            await _taskService.UpdateStatusAsync(id, filterUpdate);
             return NoContent();
         }
     }

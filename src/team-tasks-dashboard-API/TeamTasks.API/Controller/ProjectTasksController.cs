@@ -18,7 +18,7 @@ namespace TeamTasks.API.Controller
         [HttpGet]
         public async Task<IActionResult> GetByProject(int projectId, [FromQuery] TaskFilterDto filter)
         {
-            var tasks = await _taskService.GetByProjectIdAsync(projectId, filter.StatusId, filter.AssigneeId, filter.Page, filter.PageSize);
+            var tasks = await _taskService.GetByProjectIdAsync(projectId, filter);
             return Ok(tasks);
         }
     }

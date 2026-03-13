@@ -17,12 +17,12 @@ namespace TeamTasks.Infrastructure.Repositories
             _connectionString = options.Value.ConnectionString;
         }
 
-        public async Task<IEnumerable<TaskDto>> GetByProjectIdAsync(int projectId, int? statusId, int? assigneeId, int page, int pageSize)
+        public async Task<IEnumerable<TaskDto>> GetByProjectIdAsync(int projectId, TaskFilterDto filter)
         {
             using var connection = new SqlConnection(_connectionString);
             return await connection.QueryAsync<TaskDto>(
                 "sp_get_tasks_by_project",
-                new { ProjectId = projectId, StatusId = statusId, AssigneeId = assigneeId, Page = page, PageSize = pageSize },
+                new { ProjectId = projectId, filter.StatusId, filter.AssigneeId, filter.Page, filter.PageSize },
                 commandType: System.Data.CommandType.StoredProcedure
             );
         }
@@ -56,12 +56,12 @@ namespace TeamTasks.Infrastructure.Repositories
             return task;
         }
 
-        public async Task UpdateStatusAsync(int id, int statusId, int? priorityId, int? estimatedComplexity)
+        public async Task UpdateStatusAsync(int id, UpdateTaskStatusDto filterUpdate)
         {
             using var connection = new SqlConnection(_connectionString);
             await connection.ExecuteAsync(
                 "sp_update_task_status",
-                new { TaskId = id, StatusId = statusId, PriorityId = priorityId, EstimatedComplexity = estimatedComplexity },
+                new { TaskId = id, filterUpdate.StatusId, filterUpdate.PriorityId, filterUpdate.EstimatedComplexity },
                 commandType: System.Data.CommandType.StoredProcedure
             );
         }
