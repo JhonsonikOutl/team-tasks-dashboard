@@ -47,7 +47,7 @@ POST http://localhost:5000/api/seed
 
 El endpoint usa MERGE, por lo que es seguro ejecutarlo varias veces sin generar duplicados. Si los datos ya existen retorna `409 Conflict`.
 
-### SPA
+### SPA (Angular 17)
 ```bash
 cd src/team-tasks-dashboard-WebSPA/team-tasks-spa
 npm install
@@ -55,7 +55,6 @@ ng serve
 ```
 
 La SPA queda disponible en `http://localhost:4200`.
-
 ---
 
 ### Alternativa — Docker
@@ -75,7 +74,7 @@ La contraseña del usuario `TeamTasksUser` en el contenedor es `TeamTasks2024!`.
 - Para el acceso a datos use EF Core en operaciones CRUD simples y Dapper para ejecutar los SP del dashboard.
 - El backend sigue Clean Architecture dividido en cuatro capas: API, Application, Domain e Infrastructure, mas un proyecto separado para los tests con xUnit.
 - El frontend esta en Angular 17 con componentes standalone.
-- Implemente un componente `datatable` reutilizable que uso en todas las vistas tabulares, y un pipe `statusbadge` para los estados y prioridades.
+- Implemente un componente `datatable` reutilizable que uso en todas las vistas tabulares, y un `CatalogService` para centralizar estados y prioridades con cache y preload antes del primer render.
 - Para el grafico opcional se uso Chart.js con ng2-charts.
 - El repositorio sigue una estructura monorepo con separacion clara entre API y SPA dentro de la carpeta `src/`.
 
@@ -100,7 +99,6 @@ Frontend (Angular 17)
   RxJS 7.x
   Chart.js 4.4.x
   ng2-charts 6.0.x
-
 ---
 
 ## Logica del calculo de riesgo de retraso
