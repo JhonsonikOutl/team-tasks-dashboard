@@ -17,7 +17,7 @@ export class ProjectsHealthComponent implements OnInit {
 
   @ViewChild('nameTpl', { static: true }) nameTpl!: TemplateRef<any>;
 
-  columns: TableColumn[] = [];
+  columns: TableColumn<ProjectHealthDto>[] = [];
   templates: { [key: string]: TemplateRef<any> } = {};
 
   rowClass = (row: ProjectHealthDto) =>

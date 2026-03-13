@@ -16,7 +16,7 @@ export class RiskComponent implements OnInit {
 
   @ViewChild('riskTpl', { static: true }) riskTpl!: TemplateRef<any>;
 
-  columns: TableColumn[] = [];
+  columns: TableColumn<DelayRiskDto>[] = [];
   templates: { [key: string]: TemplateRef<any> } = {};
 
   rowClass = (row: DelayRiskDto) =>
