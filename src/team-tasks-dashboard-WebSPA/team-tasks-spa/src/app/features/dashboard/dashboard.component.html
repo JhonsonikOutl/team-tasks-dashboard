@@ -1,0 +1,89 @@
+<div class="page-content">
+  <div class="page-header">
+    <h3 class="page-title">Inicio</h3>
+    <p class="page-subtitle">Resumen general del equipo</p>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-xl-3">
+      <div class="card metric-card">
+        <i class="bi bi-kanban metric-icon"></i>
+        <p class="metric-label">Proyectos</p>
+        <p class="metric-value">{{ projectHealth.length }}</p>
+      </div>
+    </div>
+    <div class="col-6 col-xl-3">
+      <div class="card metric-card">
+        <i class="bi bi-list-task metric-icon"></i>
+        <p class="metric-label">Tareas abiertas</p>
+        <p class="metric-value">{{ totalOpenTasks }}</p>
+      </div>
+    </div>
+    <div class="col-6 col-xl-3">
+      <div class="card metric-card">
+        <i class="bi bi-people metric-icon"></i>
+        <p class="metric-label">Desarrolladores activos</p>
+        <p class="metric-value">{{ workload.length }}</p>
+      </div>
+    </div>
+    <div class="col-6 col-xl-3">
+      <div class="card metric-card metric-card--risk">
+        <i class="bi bi-exclamation-triangle metric-icon"></i>
+        <p class="metric-label">En alto riesgo</p>
+        <p class="metric-value">{{ highRiskCount }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla resumen -->
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header px-4 py-3 d-flex justify-content-between align-items-center">
+          <h6 class="mb-0">Proyectos recientes</h6>
+          <a routerLink="/projects-health" class="link-accent small">Ver todos →</a>
+        </div>
+        <div class="card-body p-0">
+          <table class="table mb-0">
+            <thead>
+              <tr><th>Proyecto</th><th>Abiertas</th><th>Completadas</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of projectHealth.slice(0,4)">
+                <td>{{ p.projectName }}</td>
+                <td>{{ p.openTasks }}</td>
+                <td>{{ p.completedTasks }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header px-4 py-3 d-flex justify-content-between align-items-center">
+          <h6 class="mb-0">Desarrolladores en riesgo</h6>
+          <a routerLink="/risk" class="link-accent small">Ver todos →</a>
+        </div>
+        <div class="card-body p-0">
+          <table class="table mb-0">
+            <thead>
+              <tr><th>Desarrollador</th><th>Tareas</th><th>Riesgo</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let r of delayRisk.slice(0,4)" [class.row-danger]="r.highRiskFlag === 1">
+                <td>{{ r.developerName }}</td>
+                <td>{{ r.openTasksCount }}</td>
+                <td>
+                  <span class="badge" [ngClass]="r.highRiskFlag === 1 ? 'bg-danger' : 'bg-success'">
+                    {{ r.highRiskFlag === 1 ? 'Alto' : 'Normal' }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

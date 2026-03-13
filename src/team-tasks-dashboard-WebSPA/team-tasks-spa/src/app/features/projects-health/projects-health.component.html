@@ -1,0 +1,22 @@
+<div class="page-content">
+  <div class="page-header">
+    <h3 class="page-title">Estado por proyecto</h3>
+    <p class="page-subtitle">Resumen de tareas abiertas y completadas por proyecto</p>
+  </div>
+
+  <div class="card">
+    <div class="card-body p-0">
+      <app-datatable
+        [columns]="columns"
+        [data]="projectHealth"
+        [rowClass]="rowClass"
+        [templates]="templates"
+        (rowClick)="onProjectClick($event)">
+      </app-datatable>
+    </div>
+  </div>
+</div>
+
+<ng-template #nameTpl let-row>
+  <a [routerLink]="['/projects', row.projectId]" class="link-accent">{{ row.projectName }}</a>
+</ng-template>

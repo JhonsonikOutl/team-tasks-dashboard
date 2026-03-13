@@ -1,0 +1,35 @@
+<div class="table-responsive">
+  <table class="table table-hover align-middle mb-0">
+    <thead>
+      <tr>
+        <th *ngFor="let col of columns"
+          [class.sortable]="col.sortable"
+          (click)="col.sortable && sort(col.key)"
+          scope="col">
+          {{ col.label }}
+          <span *ngIf="col.sortable && sortKey === col.key" class="sort-icon">
+            {{ sortAsc ? '↑' : '↓' }}
+          </span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of data"
+        [ngClass]="getRowClass(row)"
+        (click)="rowClick.emit(row)"
+        class="clickable">
+        <td *ngFor="let col of columns">
+          <ng-container *ngIf="col.template && templates[col.template]; else plainText">
+            <ng-container *ngTemplateOutlet="templates[col.template]; context: { $implicit: row }"></ng-container>
+          </ng-container>
+          <ng-template #plainText>{{ row[col.key] }}</ng-template>
+        </td>
+      </tr>
+      <tr *ngIf="data.length === 0">
+        <td [attr.colspan]="columns.length" class="text-center py-4">
+          Sin datos disponibles
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,23 @@
+<div class="page-content">
+  <div class="page-header">
+    <h3 class="page-title">Riesgo de retraso</h3>
+    <p class="page-subtitle">Predicción de retrasos basada en historial de fechas de cada desarrollador</p>
+  </div>
+
+  <div class="card">
+    <div class="card-body p-0">
+      <app-datatable
+        [columns]="columns"
+        [data]="delayRisk"
+        [rowClass]="rowClass"
+        [templates]="templates">
+      </app-datatable>
+    </div>
+  </div>
+</div>
+
+<ng-template #riskTpl let-row>
+  <span class="badge" [ngClass]="row.highRiskFlag === 1 ? 'bg-danger' : 'bg-success'">
+    {{ row.highRiskFlag === 1 ? 'Alto' : 'Normal' }}
+  </span>
+</ng-template>

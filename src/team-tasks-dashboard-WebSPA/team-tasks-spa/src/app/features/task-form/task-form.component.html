@@ -1,0 +1,95 @@
+<div class="modal-backdrop fade show"></div>
+
+<div class="modal fade show d-block" tabindex="-1" role="dialog" (click)="close.emit()">
+  <div class="modal-dialog modal-dialog-scrollable" role="document" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Nueva tarea</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="close.emit()"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <div *ngIf="successMessage" class="alert alert-success py-2">{{ successMessage }}</div>
+        <div *ngIf="errorMessage" class="alert alert-danger py-2">{{ errorMessage }}</div>
+
+        <form [formGroup]="form" (ngSubmit)="submit()">
+
+          <div class="mb-3">
+            <label class="form-label">Proyecto <span class="text-danger">*</span></label>
+            <select class="form-select" formControlName="projectId">
+              <option [ngValue]="null" disabled>Seleccionar proyecto</option>
+              <option *ngFor="let p of projects" [ngValue]="p.projectId">{{ p.name }}</option>
+            </select>
+            <div *ngIf="f['projectId'].touched && f['projectId'].invalid" class="text-danger small mt-1">
+              El proyecto es requerido.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Título <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="title" />
+            <div *ngIf="f['title'].touched && f['title'].invalid" class="text-danger small mt-1">
+              El título es requerido (máx. 200 caracteres).
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Descripción</label>
+            <textarea class="form-control" formControlName="description" rows="3"></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Asignado a</label>
+            <select class="form-select" formControlName="assigneeId">
+              <option [ngValue]="null">Sin asignar</option>
+              <option *ngFor="let d of developers" [ngValue]="d.developerId">{{ d.fullName }}</option>
+            </select>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Estado <span class="text-danger">*</span></label>
+              <select class="form-select" formControlName="statusId">
+                <option *ngFor="let s of statuses" [ngValue]="s.id">{{ s.displayName }}</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Prioridad <span class="text-danger">*</span></label>
+              <select class="form-select" formControlName="priorityId">
+                <option *ngFor="let p of priorities" [ngValue]="p.id">{{ p.displayName }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Complejidad estimada (1-5) <span class="text-danger">*</span></label>
+              <input type="number" class="form-control" formControlName="estimatedComplexity" min="1" max="5" />
+              <div *ngIf="f['estimatedComplexity'].touched && f['estimatedComplexity'].invalid" class="text-danger small mt-1">
+                Debe ser un valor entre 1 y 5.
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Fecha de vencimiento <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" formControlName="dueDate" />
+              <div *ngIf="f['dueDate'].touched && f['dueDate'].invalid" class="text-danger small mt-1">
+                La fecha de vencimiento es requerida.
+              </div>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="close.emit()">Cancelar</button>
+        <button type="submit" class="btn btn-accent" [disabled]="submitting" (click)="submit()">
+          {{ submitting ? 'Guardando...' : 'Crear tarea' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
