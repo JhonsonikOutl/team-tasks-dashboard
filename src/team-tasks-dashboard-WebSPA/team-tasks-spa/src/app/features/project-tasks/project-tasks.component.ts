@@ -7,11 +7,12 @@ import { Chart, ChartData, ChartOptions } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { ProjectService } from '../../core/services/project.service';
 import { DeveloperService } from '../../core/services/developer.service';
+import { CatalogService } from '../../core/services/catalog.service';
 import { Project } from '../../core/models/project.model';
 import { Task } from '../../core/models/task.model';
 import { Developer } from '../../core/models/developer.model';
+import { CatalogItem } from '../../core/models/catalog.model';
 import { DatatableComponent, TableColumn } from '../../shared/components/datatable/datatable.component';
-import { StatusbadgePipe } from '../../shared/pipes/statusbadge.pipe';
 import { TaskFormComponent } from '../task-form/task-form.component';
 
 Chart.register(ChartDataLabels);
@@ -19,7 +20,7 @@ Chart.register(ChartDataLabels);
 @Component({
   selector: 'app-project-tasks',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, NgChartsModule, DatatableComponent, StatusbadgePipe, TaskFormComponent],
+  imports: [CommonModule, RouterModule, FormsModule, NgChartsModule, DatatableComponent, TaskFormComponent],
   templateUrl: './project-tasks.component.html',
   styleUrl: './project-tasks.component.scss'
 })
@@ -27,6 +28,7 @@ export class ProjectTasksComponent implements OnInit {
   project: Project | null = null;
   tasks: Task[] = [];
   developers: Developer[] = [];
+  statuses: CatalogItem[] = [];
   selectedTask: Task | null = null;
   showTaskForm = false;
 
@@ -40,23 +42,16 @@ export class ProjectTasksComponent implements OnInit {
     return this.page * this.pageSize < this.totalCount;
   }
 
-  statuses = [
-    { id: 1, label: 'To Do' },
-    { id: 2, label: 'In Progress' },
-    { id: 3, label: 'Blocked' },
-    { id: 4, label: 'Completed' }
-  ];
-
   @ViewChild('statusTpl',   { static: true }) statusTpl!:   TemplateRef<any>;
   @ViewChild('priorityTpl', { static: true }) priorityTpl!: TemplateRef<any>;
 
-  columns: TableColumn[] = [];
+  columns: TableColumn<Task>[] = [];
   templates: { [key: string]: TemplateRef<any> } = {};
 
   chartData: ChartData<'doughnut'> = {
-    labels: ['To Do', 'In Progress', 'Blocked', 'Completed'],
+    labels: [],
     datasets: [{
-      data: [0, 0, 0, 0],
+      data: [],
       backgroundColor: ['#6c757d', '#4f8ef7', '#dc3545', '#198754'],
       borderWidth: 0
     }]
@@ -81,26 +76,35 @@ export class ProjectTasksComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
-    private developerService: DeveloperService
+    private developerService: DeveloperService,
+    public catalogService: CatalogService
   ) {}
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
     this.columns = [
-      { key: 'title', label: 'Título', sortable: true},
-      { key: 'assigneeName', label: 'Asignado a'},
-      { key: 'status', label: 'Estado', template: 'status'},
-      { key: 'priority', label: 'Prioridad', template: 'priority'},
+      { key: 'title',               label: 'Título',      sortable: true },
+      { key: 'assigneeName',        label: 'Asignado a' },
+      { key: 'statusDisplay',       label: 'Estado',      template: 'status' },
+      { key: 'priorityDisplay',     label: 'Prioridad',   template: 'priority' },
       { key: 'estimatedComplexity', label: 'Complejidad' },
-      { key: 'createdAt', label: 'Creada'},
-      { key: 'dueDate', label: 'Vencimiento'}
+      { key: 'createdAt',           label: 'Creada' },
+      { key: 'dueDate',             label: 'Vencimiento' }
     ];
 
     this.templates = {
       status:   this.statusTpl,
       priority: this.priorityTpl
     };
+
+    this.catalogService.getTaskStatuses().subscribe(statuses => {
+      this.statuses = statuses;
+      this.chartData = {
+        ...this.chartData,
+        labels: statuses.map(s => s.displayName)
+      };
+    });
 
     this.projectService.getById(id).subscribe(p => this.project = p);
     this.developerService.getActive().subscribe(d => this.developers = d);
@@ -119,13 +123,9 @@ export class ProjectTasksComponent implements OnInit {
   }
 
   updateChart(tasks: Task[]): void {
-    const counts = [0, 0, 0, 0];
-    tasks.forEach(t => {
-      if (t.status === 'To Do')            counts[0]++;
-      else if (t.status === 'In Progress') counts[1]++;
-      else if (t.status === 'Blocked')     counts[2]++;
-      else if (t.status === 'Completed')   counts[3]++;
-    });
+    const counts = this.statuses.map(s =>
+      tasks.filter(t => t.status === s.description).length
+    );
     this.chartData = {
       ...this.chartData,
       datasets: [{ ...this.chartData.datasets[0], data: counts }]

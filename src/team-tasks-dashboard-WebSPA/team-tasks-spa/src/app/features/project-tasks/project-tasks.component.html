@@ -15,7 +15,7 @@
         <div class="col-6 col-md-4">
           <select class="form-select form-select-sm" [(ngModel)]="filterStatusId" (change)="applyFilters()">
             <option [ngValue]="null">Todos los estados</option>
-            <option *ngFor="let s of statuses" [ngValue]="s.id">{{ s.label }}</option>
+            <option *ngFor="let s of statuses" [ngValue]="s.id">{{ s.displayName }}</option>
           </select>
         </div>
         <div class="col-6 col-md-4">
@@ -82,11 +82,11 @@
 </ng-container>
 
 <ng-template #statusTpl let-row>
-  <span class="badge" [ngClass]="'bg-' + (row.status | statusbadge)">{{ row.status }}</span>
+  <span class="badge bg-{{ catalogService.getStatusColor(row.status) }}">{{ row.statusDisplay }}</span>
 </ng-template>
 
 <ng-template #priorityTpl let-row>
-  <span class="badge" [ngClass]="'bg-' + (row.priority | statusbadge:'priority')">{{ row.priority }}</span>
+  <span class="badge bg-{{ catalogService.getPriorityColor(row.priority) }}">{{ row.priorityDisplay }}</span>
 </ng-template>
 
 <ng-template #detailContent>
@@ -96,14 +96,14 @@
   <p class="detail-label">Descripción</p>
   <p class="mb-3">{{ selectedTask?.description || '—' }}</p>
 
-  <div class="row mb-3">
+<div class="row mb-3">
     <div class="col-6">
       <p class="detail-label">Estado</p>
-      <span class="badge" [ngClass]="'bg-' + (selectedTask?.status | statusbadge)">{{ selectedTask?.status }}</span>
+      <span class="badge bg-{{ catalogService.getStatusColor(selectedTask?.status ?? '') }}">{{ selectedTask?.statusDisplay }}</span>
     </div>
     <div class="col-6">
       <p class="detail-label">Prioridad</p>
-      <span class="badge" [ngClass]="'bg-' + (selectedTask?.priority | statusbadge:'priority')">{{ selectedTask?.priority }}</span>
+      <span class="badge bg-{{ catalogService.getPriorityColor(selectedTask?.priority ?? '') }}">{{ selectedTask?.priorityDisplay }}</span>
     </div>
   </div>
 
