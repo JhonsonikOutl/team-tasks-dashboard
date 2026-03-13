@@ -4,8 +4,10 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { TaskService } from '../../core/services/task.service';
 import { ProjectService } from '../../core/services/project.service';
 import { DeveloperService } from '../../core/services/developer.service';
+import { CatalogService } from '../../core/services/catalog.service';
 import { Project } from '../../core/models/project.model';
 import { Developer } from '../../core/models/developer.model';
+import { CatalogItem } from '../../core/models/catalog.model';
 import { CreateTask } from '../../core/models/task.model';
 
 @Component({
@@ -22,28 +24,18 @@ export class TaskFormComponent implements OnInit {
   form!: FormGroup;
   projects: Project[] = [];
   developers: Developer[] = [];
+  statuses: CatalogItem[] = [];
+  priorities: CatalogItem[] = [];
   submitting = false;
   errorMessage = '';
   successMessage = '';
-
-  statuses = [
-    { id: 1, label: 'To Do' },
-    { id: 2, label: 'In Progress' },
-    { id: 3, label: 'Blocked' },
-    { id: 4, label: 'Completed' }
-  ];
-
-  priorities = [
-    { id: 1, label: 'Low' },
-    { id: 2, label: 'Medium' },
-    { id: 3, label: 'High' }
-  ];
 
   constructor(
     private fb: FormBuilder,
     private taskService: TaskService,
     private projectService: ProjectService,
-    private developerService: DeveloperService
+    private developerService: DeveloperService,
+    private catalogService: CatalogService
   ) {}
 
   ngOnInit(): void {
@@ -52,14 +44,24 @@ export class TaskFormComponent implements OnInit {
       title: ['', [Validators.required, Validators.maxLength(200)]],
       description: ['', Validators.maxLength(1000)],
       assigneeId: [null],
-      statusId: [1, Validators.required],
-      priorityId: [1, Validators.required],
+      statusId: [null, Validators.required],
+      priorityId: [null, Validators.required],
       estimatedComplexity: [3, [Validators.required, Validators.min(1), Validators.max(5)]],
       dueDate: ['', Validators.required]
     });
 
     this.projectService.getAll().subscribe(data => this.projects = data);
     this.developerService.getActive().subscribe(data => this.developers = data);
+
+    this.catalogService.getTaskStatuses().subscribe(data => {
+      this.statuses = data;
+      this.form.patchValue({ statusId: data[0]?.id ?? null });
+    });
+
+    this.catalogService.getTaskPriorities().subscribe(data => {
+      this.priorities = data;
+      this.form.patchValue({ priorityId: data[0]?.id ?? null });
+    });
   }
 
   get f() { return this.form.controls; }

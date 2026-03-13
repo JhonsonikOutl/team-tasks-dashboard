@@ -52,13 +52,13 @@
             <div class="col-md-6 mb-3">
               <label class="form-label">Estado <span class="text-danger">*</span></label>
               <select class="form-select" formControlName="statusId">
-                <option *ngFor="let s of statuses" [ngValue]="s.id">{{ s.label }}</option>
+                <option *ngFor="let s of statuses" [ngValue]="s.id">{{ s.displayName }}</option>
               </select>
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label">Prioridad <span class="text-danger">*</span></label>
               <select class="form-select" formControlName="priorityId">
-                <option *ngFor="let p of priorities" [ngValue]="p.id">{{ p.label }}</option>
+                <option *ngFor="let p of priorities" [ngValue]="p.id">{{ p.displayName }}</option>
               </select>
             </div>
           </div>
