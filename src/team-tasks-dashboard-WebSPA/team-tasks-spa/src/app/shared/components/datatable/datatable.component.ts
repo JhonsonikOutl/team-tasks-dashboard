@@ -1,8 +1,8 @@
-import { Component, Input, Output, EventEmitter, ContentChildren, QueryList, TemplateRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-export interface TableColumn {
-  key: string;
+export interface TableColumn<T> {
+  key: keyof T;
   label: string;
   sortable?: boolean;
   template?: string;
@@ -15,17 +15,17 @@ export interface TableColumn {
   templateUrl: './datatable.component.html',
   styleUrl: './datatable.component.scss'
 })
-export class DatatableComponent {
-  @Input() columns: TableColumn[] = [];
-  @Input() data: any[] = [];
-  @Input() rowClass?: (row: any) => string;
+export class DatatableComponent<T extends object> {
+  @Input() columns: TableColumn<T>[] = [];
+  @Input() data: T[] = [];
+  @Input() rowClass?: (row: T) => string;
   @Input() templates: { [key: string]: TemplateRef<any> } = {};
-  @Output() rowClick = new EventEmitter<any>();
+  @Output() rowClick = new EventEmitter<T>();
 
-  sortKey: string = '';
+  sortKey: keyof T | '' = '';
   sortAsc: boolean = true;
 
-  sort(key: string): void {
+  sort(key: keyof T): void {
     if (this.sortKey === key) {
       this.sortAsc = !this.sortAsc;
     } else {
@@ -41,7 +41,7 @@ export class DatatableComponent {
     });
   }
 
-  getRowClass(row: any): string {
+  getRowClass(row: T): string {
     return this.rowClass ? this.rowClass(row) : '';
   }
 
