@@ -27,19 +27,49 @@ namespace TeamTasks.Infrastructure.Repositories
             using var connection = new SqlConnection(_connectionString);
 
             await connection.ExecuteAsync(@"
-                merge ProjectStatuses as target
-                using (values ('Planned'), ('In Progress'), ('Completed')) as source (Description)
-                on target.Description = source.Description
-                when not matched then insert (Description) values (source.Description);
-                merge TaskStatuses as target
-                using (values ('To Do'), ('In Progress'), ('Blocked'), ('Completed')) as source (Description)
-                on target.Description = source.Description
-                when not matched then insert (Description) values (source.Description);
-                merge TaskPriorities as target
-                using (values ('Low'), ('Medium'), ('High')) as source (Description)
-                on target.Description = source.Description
-                when not matched then insert (Description) values (source.Description);
-            ");
+        merge ProjectStatuses as target
+        using (
+            values
+                ('Planned',     'Planificado'),
+                ('In Progress', 'En progreso'),
+                ('Completed',   'Completado')
+        ) as source (Description, DisplayName)
+        on target.Description = source.Description
+        when not matched then
+            insert (Description, DisplayName)
+            values (source.Description, source.DisplayName)
+        when matched then
+            update set DisplayName = source.DisplayName;
+
+        merge TaskStatuses as target
+        using (
+            values
+                ('To Do',       'Por hacer',   'secondary'),
+                ('In Progress', 'En progreso', 'primary'),
+                ('Blocked',     'Bloqueado',   'danger'),
+                ('Completed',   'Completado',  'success')
+        ) as source (Description, DisplayName, ColorClass)
+        on target.Description = source.Description
+        when not matched then
+            insert (Description, DisplayName, ColorClass)
+            values (source.Description, source.DisplayName, source.ColorClass)
+        when matched then
+            update set DisplayName = source.DisplayName, ColorClass = source.ColorClass;
+
+        merge TaskPriorities as target
+        using (
+            values
+                ('Low',    'Baja',  'success'),
+                ('Medium', 'Media', 'warning'),
+                ('High',   'Alta',  'danger')
+        ) as source (Description, DisplayName, ColorClass)
+        on target.Description = source.Description
+        when not matched then
+            insert (Description, DisplayName, ColorClass)
+            values (source.Description, source.DisplayName, source.ColorClass)
+        when matched then
+            update set DisplayName = source.DisplayName, ColorClass = source.ColorClass;
+    ");
         }
 
         public async Task SeedDevelopersAsync()
