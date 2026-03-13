@@ -133,7 +133,14 @@ namespace TeamTasks.Tests.Services
         {
             _taskRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync((TaskDto?)null);
 
-            await Assert.ThrowsAsync<ArgumentException>(() => _sut.UpdateStatusAsync(99, 1, null, null));
+            UpdateTaskStatusDto updateTaskStatusDto = new()
+            {
+                StatusId = 1,
+                PriorityId = null,
+                EstimatedComplexity = null
+            };
+
+            await Assert.ThrowsAsync<ArgumentException>(() => _sut.UpdateStatusAsync(99, updateTaskStatusDto));
         }
 
         [Fact]
@@ -141,7 +148,14 @@ namespace TeamTasks.Tests.Services
         {
             _taskRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new TaskDto());
 
-            await Assert.ThrowsAsync<ArgumentException>(() => _sut.UpdateStatusAsync(1, 99, null, null));
+            UpdateTaskStatusDto updateTaskStatusDto = new()
+            {
+                StatusId = 99,
+                PriorityId = null,
+                EstimatedComplexity = null
+            };
+
+            await Assert.ThrowsAsync<ArgumentException>(() => _sut.UpdateStatusAsync(1, updateTaskStatusDto));
         }
 
         [Fact]
@@ -149,7 +163,14 @@ namespace TeamTasks.Tests.Services
         {
             _taskRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new TaskDto());
 
-            await Assert.ThrowsAsync<ArgumentException>(() => _sut.UpdateStatusAsync(1, 1, 99, null));
+            UpdateTaskStatusDto updateTaskStatusDto = new()
+            {
+                StatusId = 1,
+                PriorityId = 99,
+                EstimatedComplexity = null
+            };
+
+            await Assert.ThrowsAsync<ArgumentException>(() => _sut.UpdateStatusAsync(1, updateTaskStatusDto));
         }
 
         [Fact]
@@ -157,16 +178,36 @@ namespace TeamTasks.Tests.Services
         {
             _taskRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new TaskDto());
 
-            await Assert.ThrowsAsync<ArgumentException>(() => _sut.UpdateStatusAsync(1, 1, null, 6));
+            UpdateTaskStatusDto updateTaskStatusDto = new()
+            {
+                StatusId = 1,
+                PriorityId = null,
+                EstimatedComplexity = 6
+            };
+
+            await Assert.ThrowsAsync<ArgumentException>(() => _sut.UpdateStatusAsync(1, updateTaskStatusDto));
         }
 
         [Fact]
         public async Task UpdateStatusAsync_ValidData_ExecutesWithoutError()
         {
-            _taskRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(new TaskDto());
-            _taskRepositoryMock.Setup(r => r.UpdateStatusAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int?>(), It.IsAny<int?>())).Returns(Task.CompletedTask);
+            var updateTaskStatusDto = new UpdateTaskStatusDto
+            {
+                StatusId = 1,
+                PriorityId = 1,
+                EstimatedComplexity = 3
+            };
 
-            var exception = await Record.ExceptionAsync(() => _sut.UpdateStatusAsync(1, 1, 1, 3));
+            _taskRepositoryMock
+                .Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new TaskDto());
+
+            _taskRepositoryMock
+                .Setup(r => r.UpdateStatusAsync(It.IsAny<int>(), It.IsAny<UpdateTaskStatusDto>()))
+                .Returns(Task.CompletedTask);
+
+            var exception = await Record.ExceptionAsync(() =>
+                _sut.UpdateStatusAsync(1, updateTaskStatusDto));
 
             Assert.Null(exception);
         }
